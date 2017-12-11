@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {% for row in apps %}
+        <div>
+            <span>{{ row.id }}</span>
+            <span>{{ row.name }}</span>
+        </div>
+    {% endfor %}
+</body>
+</html>

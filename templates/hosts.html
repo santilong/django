@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/test.css"/>
+</head>
+<body>
+    <h1>主机信息(对象)</h1>
+    <input type="button" id="addhost" value="新增">
+    <table border="1">
+        <thead>
+            <tr>
+                <th>序号</th>
+                <th>主机名</th>
+                <th>IP</th>
+                <th>端口</th>
+                <th>业务线名称</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in v1 %}
+            <tr hid="{{ row.id }}">
+                <td>{{ forloop.counter }}</td>
+                <td id="hostname">{{ row.hostname }}</td>
+                <td id="ip">{{ row.ip }}</td>
+                <td id="port">{{ row.port  }}</td>
+                <td id="bus" bid="{{ row.business_id }}">{{ row.business.caption }}</td>
+                <td><a class="edithost">编辑</a> | <a class="delhost">删除</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="shadow hide"></div>
+    <div class="add_host hide">
+        <form action="hosts" method="post">
+            <p style="color: white">
+                添加机器信息
+            </p>
+            <p>
+            <input type="text" name="hostname" placeholder="机器名" id="hostname" >
+            </p>
+            <p>
+            <input type="text" name="ip" placeholder="IP" id="ip" >
+            </p>
+            <p>
+            <input type="text" name="port" placeholder="Port" id="port" >
+            </p>
+            <select name="bus">
+                {% for row in business_info %}
+                <option value="{{ row.id}}">{{ row.caption }}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="提交">
+            <input type="reset" id="cancel" value="取消">
+        </form>
+    </div>
+
+    <div class="edit_host hide">
+        <form id="ef" action="ajax_test" method="post">
+            <p style="color: white">
+                修改机器信息
+            </p>
+            <p>
+                <input type="text" name="hid" id="hid" style="display: none;">
+            </p>
+            <p>
+            <input type="text" name="hostname" id="hostname" ><span style="color: red;" id="error_info"></span>
+            </p>
+            <p>
+            <input type="text" name="ip" id="ip" >
+            </p>
+            <p>
+            <input type="text" name="port" id="port" >
+            </p>
+            <select name="bus">
+                {% for row in business_info %}
+                <option value="{{ row.id}}">{{ row.caption }}</option>
+                {% endfor %}
+            </select>
+            <!--<input type="submit" value="提交">-->
+            <a id="ajax">提交</a>
+            <input type="reset" id="cancel" value="取消">
+        </form>
+    </div>
+
+    <div style="display: none" id="deldiv">
+        <form id="df" action="/cmdb/ajax_del" method="post">
+            <input type="text" id="delput" name="delhid">
+        </form>
+    </div>
+    <h1>主机信息(字典)</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>序号</th>
+                <th>业务线名称</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in v2 %}
+            <tr hid="{{ row.id }}">
+                <td>{{ forloop.counter }}</td>
+                <td>{{ row.caption }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </table>
+    <h1>主机信息(元组)</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>序号</th>
+                <th>业务线名称</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in v3 %}
+            <tr hid="{{ row.0}}">
+                <td>{{ forloop.counter }}</td>
+                <td>{{ row.1 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script src="/static/jquery-2.1.4.min.js"></script>
+    <script>
+        $('#addhost').click(function () {
+            $('.shadow,.add_host').toggleClass('hide')
+        });
+        $('.add_host #cancel').click(function () {
+            $('.shadow,.add_host').toggleClass('hide')
+        });
+        
+        $('.edithost').click(function () {
+            $('.shadow,.edit_host').toggleClass('hide')
+            var hid =  $(this).parent().parent().attr('hid')
+            var hostname = $(this).parent().parent().find('#hostname').text()
+            var ip = $(this).parent().parent().find('#ip').text()
+            var port = $(this).parent().parent().find('#port').text()
+            var bus = $(this).parent().parent().find('#bus').attr('bid')
+            $('.edit_host input[id="hid"]').val(hid)
+            $('.edit_host input[id="hostname"]').val(hostname)
+            $('.edit_host input[id="ip"]').val(ip)
+            $('.edit_host input[id="port"]').val(port)
+            $('.edit_host select').val(bus)
+
+        });
+        $('.edit_host #cancel').click(function () {
+            $('.shadow,.edit_host').toggleClass('hide')
+        });
+        $('#ajax').click(function () {
+            $.ajax ({
+                url:'/cmdb/ajax_test',
+                type:'POST',
+                data:$('#ef').serialize(),
+                dataType:'JSON',
+                success:function (obj) {
+                    if (obj.status) {
+                        //console.log(obj)
+                        location.reload();
+                    }else {
+                        $('#error_info').text(obj.error)
+                    }
+                }
+            })
+        })
+        $('.delhost').click(function () {
+            var hid =  $(this).parent().parent().attr('hid')
+            var state = confirm('是否真的删除')
+            if (state) {
+                $('#delput').val(hid);
+                $.ajax ({
+                    url:'/cmdb/ajax_del',
+                    type:'POST',
+                    data:$('#df').serialize(),
+                    success: function (data) {
+                        var obj = JSON.parse(data)
+                        if (obj.status) {
+                            location.reload()
+                        }else {
+                            alert('删除过程报错')
+                        }
+                    }
+                })
+            }
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/test.css">
+</head>
+<body>
+    <!--底层模板-->
+    <div class="shadow hide"></div>
+    <!--添加信息模态对话框-->
+    <div class="submit_div hide">
+        <form id="app_add" action="/apphosts.html" method="POST">
+            <input type="text" name="app" placeholder="业务名"/>
+            <select name="host" multiple="multiple" size="10">
+                {% for row in v1 %}
+                <option value="{{ row.id }}">{{ row.hostname }}</option>
+                {% endfor %}
+            </select>
+            <div>
+                <span><a id="app_submit">提交</a></span> | <span><a id="app_cancel">取消</a></span>
+            </div>
+        </form>
+    </div>
+    <!--添加按钮-->
+    <input id="button_submit" type="button" value="添加">
+    <!--展示表格-->
+    <table border="1">
+        <thead>
+            <tr>
+                <th>序号</th>
+                <th>应用</th>
+                <th>应用实例</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in info %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td ididid="{{ row.id }}">{{ row.name }}</td>
+                <td>{% for host in row.r.all %}
+                        <span style="background-color:pink" val111="{{ host.id }}">{{ host.hostname }}</span>
+                    {% endfor %}
+                </td>
+                <td>
+                    <a class="editapp">编辑</a> | <a class="delapp">删除</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <!--
+    <div class="submit_div1 hide">
+        <form id="app_add" action="/apphosts.html" method="POST">
+            <input type="text" name="app" placeholder="业务名"/>
+            <select name="host" multiple="multiple" size="10">
+                {% for row in v1 %}
+                <option value="{{ row.id }}">{{ row.hostname }}</option>
+                {% endfor %}
+            </select>
+            <div>
+                <span><a id="app_submit">提交</a></span> | <span><a id="app_cancel">取消</a></span>
+            </div>
+        </form>
+    </div>-->
+    <!--修改信息模态对话框-->
+    <div class="edit_app_div hide">
+        <form id="app_edit" action="/apphosts.html" method="POST">
+            <input type="text" name="ididid" id="ididid1" style="display: none">
+            <input type="text" id="app11" name="app11" placeholder="业务名"/>
+            <select name="host11" id="host11" multiple="multiple" size="10">
+                {% for row in v1 %}
+                <option value="{{ row.id }}">{{ row.hostname }}</option>
+                {% endfor %}
+            </select>
+            <div>
+                <span><a id="app_edit_submit">提交</a></span> | <span><a id="app_cancel">取消</a></span>
+            </div>
+        </form>
+    </div>
+
+    <script src="/static/jquery-2.1.4.min.js"></script>
+    <script>
+        //添加按钮点击
+        $('#button_submit').click(function () {
+            $('.shadow,.submit_div').toggleClass('hide');
+        });
+        //添加中取消按钮点击
+        $('.submit_div #app_cancel').click(function () {
+            $('.shadow,.submit_div').toggleClass('hide')
+        });
+        //添加中的提交按钮点击
+        $('#app_submit').click(function (){
+            $.ajax({
+                url:'/cmdb/apphosts',
+                type:'POST',
+                traditional:true,
+                data: $('#app_add').serialize(),
+                success:function (data) {
+                    var obj = JSON.parse(data);
+                    if (obj.status) {
+                        location.reload()
+                    }else {
+                        alert(obj.error)
+                    }
+                }
+            })
+        });
+        //编辑按钮点击
+        $('.editapp').click(function () {
+            $('.shadow,.edit_app_div').toggleClass('hide');
+            var app_name = $(this).parent().prev().prev().text();
+            var app_ididid = $(this).parent().prev().prev().attr('ididid');
+            $('#ididid1').val(app_ididid)
+            $('#app11').val(app_name);
+            var hid_list = [];
+            $(this).parent().prev().children().each(function () {
+                var hid = $(this).attr('val111');
+                hid_list.push(hid)
+            });
+            $('#app_edit #host11').val(hid_list)
+        });
+        //编辑中的提交按钮点击
+        $('#app_edit_submit').click(function () {
+            $.ajax({
+                url:'/cmdb/apphosts',
+                type:'POST',
+                dataType:'JSON',
+                traditional:true,
+                data:$('#app_edit').serialize(),
+                success:function (obj) {
+                    if(obj.status) {
+                        location.reload()
+                    }else {
+                        alert(obj.error)
+                    }
+                }
+
+
+            })
+        });
+        //编辑中的取消按钮点击
+        $('.edit_app_div #app_cancel').click(function () {
+            $('.shadow,.edit_app_div').toggleClass('hide')
+        });
+        //删除按钮点击
+        $('.delapp').click(function () {
+            var appid = $(this).parent().prev().prev().attr('ididid')
+            $.ajax({
+                url:'/cmdb/apphosts',
+                type:'POST',
+                dataType:'JSON',
+                data:{'appid': appid},
+                success:function (obj) {
+                    if (obj.status) {
+                        location.reload()
+                    }else{
+                        alert(obj.error)
+                    }
+                }
+            })
+        })
+    </script>
+</body>
+</html>

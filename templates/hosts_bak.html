@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>机器信息</title>
+    <link rel="stylesheet" href="../static/test.css">
+</head>
+<body>
+    <!--展示表格-->
+	<h2>服务器列表</h2>
+	<table border="1">
+		<thead>
+			<tr>
+                <th>选择</th>
+				<th>Hostname</th>
+				<th>IP</th>
+				<th>Port</th>
+				<th>Business</th>
+			</tr>
+		</thead>
+        <tbody>
+            {% for row in hosts_info %}
+            <tr>
+                <td><input type="radio" name="radio" value="{{ row.id }}"/></td>
+                <td>{{ row.hostname }}</td>
+				<td>{{ row.ip }}</td>
+				<td>{{ row.port }}</td>
+				<td>{{ row.business.caption }}</td>
+			</tr>
+            {% endfor %}
+        </tbody>
+	</table>
+    <!--展示表格end-->
+    <!--新增和修改按钮-->
+    <div style="padding:5px 0;">
+        <a id="add_host" >Add</a>
+        <a id="edit_host">Edit</a><span style="color: red;" id="alert1"></span>
+    </div>
+    <!--新增和修改按钮end-->
+    <!--第一层蒙板-->
+    <div class="one hide"></div>
+    <!--第一层蒙板end-->
+    <!--新增功能的模态对话框-->
+    <div class="two hide">
+        <div title="添加主机信息" style="width:400px">
+            <div style="padding:10px 60px 20px 60px">
+            <form id="ff" name="ff1" method="post" action="hosts">
+                <table cellpadding="5">
+                    <tr>
+                        <td>Hostname:</td>
+                        <td><input type="text" name="hostname" ></input></td>
+                        <td><span id="span1" style="color: red;width:10px;"></span></td>
+                    </tr>
+                    <tr>
+                        <td>IP:</td>
+                        <td><input type="text" name="ip"></input></td>
+                    </tr>
+                    <tr>
+                        <td>Port:</td>
+                        <td><input type="text" name="port"></input></td>
+                    </tr>
+                    <tr>
+                        <td>Caption:</td>
+                        <td>
+                            <select  name="bid">
+                                {% for row in caption %}
+                                <option value="{{ row.id }}">{{ row.caption }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <div style="text-align:center;padding:5px">
+                <a href="javascript:void(0)" id="submit1">Submit</a>
+                <a href="javascript:void(0)" id="clear" >Clear</a>
+            </div>
+            </div>
+        </div>
+    </div>
+    <!--新增功能的模态对话框end-->
+    <!--修改功能的模态对话框-->
+    <div class="three hide">
+        <div title="修改主机信息" style="width:400px">
+            <div style="padding:10px 60px 20px 60px">
+            <form id="dd" name="dd1" method="post" action="hosts">
+                <table cellpadding="5">
+                    <tr>
+                        <td>Hostname:</td>
+                        <td><input type="text" id="hostname1" name="hostname1"></input></td>
+                        <td><span id="span1" style="color: red;width:10px;"></span></td>
+                    </tr>
+                    <tr>
+                        <td>IP:</td>
+                        <td><inputtype="text" id="ip1" name="ip1"></input></td>
+                    </tr>
+                    <tr>
+                        <td>Port:</td>
+                        <td><inputtype="text" id="port1" name="port1"></input></td>
+                    </tr>
+                    <tr>
+                        <td>Caption:</td>
+                        <td>
+                            <select  id="bid1" name="bid1">
+                                {% for row in caption %}
+                                <option value="{{ row.id }}">{{ row.caption }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <div style="text-align:center;padding:5px">
+                <a href="javascript:void(0)" id="submit2">Submit</a>
+                <a href="javascript:void(0)" id="clear1">Clear</a>
+            </div>
+            </div>
+        </div>
+    </div>
+    <!--修改功能的模态对话框end-->
+    <!--js-->
+	<script type="text/javascript" src="../static/jquery-2.1.4.min.js"></script>
+    <script>
+        $(function () {
+            $('#add_host').click(function () {
+                $('.one,.two').toggleClass('hide');
+            });
+
+            $('#edit_host').click(function () {
+                $('#alert1').text('');
+                flag = 0
+                $(':radio').each(function () {
+                    if ($(this).prop('checked')) {
+                        flag = 1
+                        if(flag==1) {
+                            $('.one,.three').toggleClass('hide');
+                        }
+                        var bid = $(this).parent().parent().parent().firstChild
+                        console.log(bid)
+
+                        $('#hostname1').siblings().text($(this).parent().parent().siblings().find('div')[0].innerText)
+                        $('#ip1').siblings().text($(this).parent().parent().siblings().find('div')[1].innerText)
+                        $('#port1').siblings().text($(this).parent().parent().siblings().find('div')[2].innerText)
+
+                    }
+                })
+                if(flag==0){
+                        $('#alert1').text('未选择机器')
+                    }
+
+            });
+
+            $('#submit1').click(function () {
+                $.ajax({
+                    url:$('#ff').attr('action'),
+                    type:'POST',
+                    data:$('#ff').serialize(),
+                    success:function (data) {
+                        var obj = JSON.parse(data);
+                        if(obj.status) {
+                            location.reload();
+                        }else {
+                            $('td #span1').text(obj.error)
+                        }
+                    }
+                });
+            })
+
+            $('#clear').click(function () {
+                $('.one,.two').toggleClass('hide');
+            });
+            $('#clear1').click(function () {
+                $('.one,.three').toggleClass('hide');
+            });
+        })
+    </script>
+    <!--js end-->
+
+</body>
+</html>
