@@ -125,6 +125,26 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <h1>主机信息(垮表查询字典)</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>主机名</th>
+                <th>业务线名称</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in v4 %}
+            <tr>
+                <td>{{ row.hostname }}</td>
+                <td>{{ row.business__caption }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
     <script src="/static/jquery-2.1.4.min.js"></script>
     <script>
         $('#addhost').click(function () {

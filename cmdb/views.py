@@ -12,7 +12,13 @@ def hosts(request):
         v3 = models.Business.objects.all().values_list() #元组
         #print(v3)
         business_info = models.Business.objects.all()
-        return render(request,'hosts.html',{'v1':v1,'v2':v2,'v3':v3,'business_info':business_info})
+
+        ####测试跨表查询
+        v4 = models.Hosts.objects.all().values('hostname','business__caption')
+        ####
+
+
+        return render(request,'hosts.html',{'v1':v1,'v2':v2,'v3':v3,'business_info':business_info,'v4':v4})
     elif request.method == 'POST':
         h = request.POST.get('hostname')
         ip = request.POST.get('ip')
