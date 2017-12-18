@@ -4,6 +4,8 @@ from cmdb import models
 import json
 # Create your views here.
 def hosts(request):
+    for k,v in request.environ.items():
+        print(k,v)
     if request.method == 'GET':
         v1 = models.Hosts.objects.all() #对象
         # print(v1)
@@ -107,6 +109,8 @@ def apphosts(request):
     return HttpResponse(json.dumps(ret))
 
 
+def block(request):
+    return render(request,'block.html')
 
 
 

@@ -24,4 +24,5 @@ urlpatterns = [
     url(r'^ajax_del$', views.ajax_del),
     url(r'^apps$', views.apps),
     url(r'^apphosts$', views.apphosts),
+    url(r'^block', views.block),
 ]
