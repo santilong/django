@@ -113,6 +113,31 @@ def block(request):
     return render(request,'block.html')
 
 
+def testfunc(request):
+    return render(request,'testfunc.html')
+
+LIST = [ i for i in range(109)]
+def page_list(request):
+    from django.utils.safestring import mark_safe
+    current_page = request.GET.get('p',1)
+    current_page = int(current_page)
+    start = (current_page-1) * 10
+    end = current_page * 10
+    data = LIST[start:end]
+    count,y = divmod(len(LIST),10)
+    if y != 0:
+        count += 1
+        page_str = []
+    for i in range(1,count+1):
+        if i == current_page:
+            print('11111')
+            str = "<a class='base active' href='page_list?p=%s'>%s</a>" %(i,i)
+        else:
+            str = "<a class='base' href='page_list?p=%s'>%s</a>" % (i, i)
+        page_str.append(str)
+    page_str = "".join(page_str)
+    page_str = mark_safe(page_str)
+    return render(request,'page_list.html',{'data':data,'page_str':page_str})
 
 
 

@@ -25,4 +25,7 @@ urlpatterns = [
     url(r'^apps$', views.apps),
     url(r'^apphosts$', views.apphosts),
     url(r'^block', views.block),
+    url(r'^testfunc', views.testfunc),
+    url(r'^page_list', views.page_list),
+
 ]
