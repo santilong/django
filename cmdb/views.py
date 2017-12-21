@@ -132,7 +132,7 @@ def login(request):
     if request.method == 'POST':
         u = request.POST.get('user')
         p = request.POST.get('pwd')
-
+        expire = request.POST.get('expire')
     userinfo = models.UserInfo.objects.filter(username=u)   ###对象
     if not userinfo:
         return render(request,'login.html')
@@ -140,15 +140,19 @@ def login(request):
         for row in userinfo:
             if p == row.pwd:
                 res = redirect('/cmdb/index')
-                res.set_cookie('username111','wo TM shi Cookie')
+                if expire == 'True':
+                    res.set_cookie('username111','wo TM shi Cookie',max_age=5184000,httponly=True)
+                else:
+                    res.set_cookie('username111', 'wo TM shi Cookie', httponly=True)
                 return res
             else:
                 return redirect('/cmdb/login')
 
 def index(request):
-    c = request.COOKIES.get('username111')
-    print(c)
-    return HttpResponse('index')
+    v = request.COOKIES.get('username111')
+    if not v:
+        return redirect('/cmdb/login')
+    return render(request,'index.html',{'v':v})
 
 
 
