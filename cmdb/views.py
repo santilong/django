@@ -125,7 +125,30 @@ def page_list(request):
     return render(request,'page_list.html',{'data':data,'page_str':page_str})
 
 
+def login(request):
 
+    if request.method == 'GET':
+        return render(request,'login.html')
+    if request.method == 'POST':
+        u = request.POST.get('user')
+        p = request.POST.get('pwd')
+
+    userinfo = models.UserInfo.objects.filter(username=u)   ###对象
+    if not userinfo:
+        return render(request,'login.html')
+    else:
+        for row in userinfo:
+            if p == row.pwd:
+                res = redirect('/cmdb/index')
+                res.set_cookie('username111','wo TM shi Cookie')
+                return res
+            else:
+                return redirect('/cmdb/login')
+
+def index(request):
+    c = request.COOKIES.get('username111')
+    print(c)
+    return HttpResponse('index')
 
 
 

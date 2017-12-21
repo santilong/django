@@ -17,3 +17,7 @@ class Application(models.Model):
     name = models.CharField(max_length=32)
     r = models.ManyToManyField('Hosts')
 
+class UserInfo(models.Model):
+    username = models.CharField(max_length=32)
+    pwd = models.CharField(max_length=32)
+

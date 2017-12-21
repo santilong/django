@@ -27,5 +27,7 @@ urlpatterns = [
     url(r'^block', views.block),
     url(r'^testfunc', views.testfunc),
     url(r'^page_list', views.page_list),
+    url(r'^login', views.login),
+    url(r'^index', views.index),
 
 ]
