@@ -117,8 +117,11 @@ def testfunc(request):
 from utils import pagination
 LIST = [ i for i in range(501)]
 def page_list(request):
+    val = request.COOKIES.get('k1')
+    val = int(val)
+    print(val)
     current_page = int(request.GET.get('p',1))
-    page_obj = pagination.Page(current_page,len(LIST))
+    page_obj = pagination.Page(current_page,len(LIST),val)
     data = LIST[page_obj.start:page_obj.end]
     page_str = page_obj.page_str('page_list')
 
@@ -138,7 +141,9 @@ def login(request):
         return render(request,'login.html')
     else:
         for row in userinfo:
-            if p == row.pwd:
+            if p != row.pwd:
+                continue
+            elif p == row.pwd:
                 res = redirect('/cmdb/index')
                 if expire == 'True':
                     res.set_cookie('username111','wo TM shi Cookie',max_age=5184000,httponly=True)

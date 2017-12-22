@@ -21,11 +21,29 @@
         <li>{{ i }}</li>
         {% endfor %}
     </ul>
+    <span>
+        <select id="t1" name="per_page_count" onchange="changePerCount(this);">
+            <option value="10">10</option>
+            <option value="30">30</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+        </select>
+    </span>
     <span class="baseup">
-{#        {% for k in page_str %}#}
-{#            {{ k }}#}
-{#        {% endfor %}#}
         {{ page_str }}
     </span>
+    <script src="/static/jquery-2.1.4.min.js"></script>
+    <script src="/static/jquery.cookie.js"></script>
+    <script>
+        $(function () {
+            var v = $.cookie('k1');
+            $('#t1').val(v)
+        });
+        function changePerCount(ths) {
+            var v = $(ths).val();
+            $.cookie('k1', v);
+            location.reload();
+        }
+    </script>
 </body>
 </html>
