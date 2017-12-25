@@ -146,15 +146,18 @@ def login(request):
             elif p == row.pwd:
                 res = redirect('/cmdb/index')
                 if expire == 'True':
-                    res.set_cookie('username111','wo TM shi Cookie',max_age=5184000,httponly=True)
+                    res.set_signed_cookie('username111','wo TM shi Cookie',salt='abc',max_age=5184000,httponly=True)
+                    # res.set_cookie('username111','wo TM shi Cookie',max_age=86400)
                 else:
-                    res.set_cookie('username111', 'wo TM shi Cookie', httponly=True)
+                    res.set_signed_cookie('username111', 'wo TM shi Cookie',salt='abc', httponly=True)
+                    # res.set_cookie('username111', 'wo TM shi Cookie')
                 return res
             else:
                 return redirect('/cmdb/login')
 
 def index(request):
-    v = request.COOKIES.get('username111')
+    v = request.get_signed_cookie('username111',salt='abc')
+    # v = request.COOKIES.get('username111')
     if not v:
         return redirect('/cmdb/login')
     return render(request,'index.html',{'v':v})
