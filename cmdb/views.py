@@ -154,12 +154,20 @@ def login(request):
                 return res
             else:
                 return redirect('/cmdb/login')
+def auth(func):
+    def inner(request,*args,**kwargs):
+        v = request.get_signed_cookie('username111', salt='abc')
+        if not v:
+            return redirect('/cmdb/login')
+        return func(request,*args,**kwargs)
+    return inner
 
+@auth
 def index(request):
     v = request.get_signed_cookie('username111',salt='abc')
     # v = request.COOKIES.get('username111')
-    if not v:
-        return redirect('/cmdb/login')
+    # if not v:
+    #     return redirect('/cmdb/login')
     return render(request,'index.html',{'v':v})
 
 
